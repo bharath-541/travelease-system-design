@@ -276,6 +276,10 @@ def main():
             "GitHub Repository: github.com/bharath-541/travelease-system-design",
             styles["CoverSub"],
         ),
+        Paragraph(
+            "Live Application: travelease-system-design.onrender.com",
+            styles["CoverSub"],
+        ),
         Spacer(1, 0.75 * inch),
         Paragraph(
             "Flask implementation, architecture, database design, algorithms, scalability, and fault tolerance",

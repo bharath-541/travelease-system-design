@@ -8,7 +8,8 @@ TravelEase is a Flask-based academic system design project for a scalable travel
 **Cohort:** Mark Zuckerberg Cohort  
 **University:** ITM Skills University  
 **Course:** System Design  
-**GitHub repository:** [bharath-541/travelease-system-design](https://github.com/bharath-541/travelease-system-design)
+**GitHub repository:** [bharath-541/travelease-system-design](https://github.com/bharath-541/travelease-system-design)<br>
+**Live application:** [travelease-system-design.onrender.com](https://travelease-system-design.onrender.com/)
 
 ## Project Deliverables
 
@@ -97,6 +98,8 @@ The SQLite database is created automatically at `instance/travelease.sqlite3`.
 ## Deployment on Render
 
 TravelEase includes a Render Blueprint for a free Python web service in the Singapore region.
+
+Live deployment: [https://travelease-system-design.onrender.com/](https://travelease-system-design.onrender.com/)
 
 1. Open the [TravelEase Render Blueprint](https://dashboard.render.com/blueprint/new?repo=https://github.com/bharath-541/travelease-system-design).
 2. Sign in to Render and connect the `bharath-541/travelease-system-design` GitHub repository when prompted.
