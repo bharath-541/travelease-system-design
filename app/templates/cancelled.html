@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "icons.html" import icon %}
+{% block title %}Booking cancelled | TravelEase{% endblock %}
+{% block content %}
+<section class="status-page status-cancelled">
+  <div class="status-symbol">{{ icon("refresh", 42) }}</div>
+  <p class="status-label">Cancellation complete</p>
+  <h1>Your inventory has been released.</h1>
+  <p>Booking {{ booking.id }} is cancelled. Any approved payment is marked for refund in the transaction history.</p>
+  <div class="failure-detail">
+    <div><span>Route</span><strong>{{ booking.origin }} to {{ booking.destination }}</strong></div>
+    <div><span>Status</span><strong>{{ booking.status }}</strong></div>
+    <div><span>Refund</span><strong>Initiated</strong></div>
+    <div><span>Seats released</span><strong>{{ booking.travellers }}</strong></div>
+  </div>
+  <div class="status-actions">
+    <a class="button button-primary" href="{{ url_for('main.index') }}">Book another trip {{ icon("arrow-right", 18) }}</a>
+  </div>
+</section>
+{% endblock %}

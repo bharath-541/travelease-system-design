@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% from "icons.html" import icon %}
+{% block title %}Search results | TravelEase{% endblock %}
+{% block content %}
+<section class="results-shell">
+  <header class="results-header">
+    <div>
+      <a class="back-link" href="{{ url_for('main.index') }}">← New search</a>
+      <h1>{{ filters.origin or "Any origin" }} to {{ filters.destination or "Everywhere" }}</h1>
+      <p>{{ results|length }} {{ filters.travel_type }} options matched. Prices include dynamic demand adjustment.</p>
+    </div>
+    {% if cache_hit %}
+      <span class="cache-note">{{ icon("activity", 16) }} Served from search cache</span>
+    {% endif %}
+  </header>
+
+  <div class="results-layout">
+    <aside class="filter-rail">
+      <form action="{{ url_for('main.search') }}" method="get">
+        <h2>Refine search</h2>
+        <input type="hidden" name="travel_type" value="{{ filters.travel_type }}">
+        <label>From<input name="origin" value="{{ filters.origin }}"></label>
+        <label>To<input name="destination" value="{{ filters.destination }}"></label>
+        <label>Depart after<input type="date" name="departure_date" value="{{ filters.departure_date }}"></label>
+        <label>Maximum total<input type="number" name="max_price" value="{{ filters.max_price or '' }}" min="0" step="500" placeholder="No limit"></label>
+        <label>Sort by
+          <select name="sort_by">
+            <option value="recommended" {% if filters.sort_by == "recommended" %}selected{% endif %}>Recommended</option>
+            <option value="price" {% if filters.sort_by == "price" %}selected{% endif %}>Lowest price</option>
+            <option value="rating" {% if filters.sort_by == "rating" %}selected{% endif %}>Best rated</option>
+          </select>
+        </label>
+        <button class="button button-secondary" type="submit">{{ icon("search", 17) }} Apply filters</button>
+      </form>
+      <div class="filter-note">
+        {{ icon("database", 20) }}
+        <p><strong>Search architecture</strong>Production would query Elasticsearch/OpenSearch while authoritative inventory stays in transactional storage.</p>
+      </div>
+    </aside>
+
+    <div class="listing-stack">
+      {% if results %}
+        {% for item in results %}
+          <article class="listing-card">
+            <div class="listing-visual tone-{{ item.image_tone }}">
+              {{ icon({"flight": "plane", "hotel": "hotel", "bus": "bus", "train": "train", "package": "package"}[item.travel_type], 38) }}
+              <span>{{ item.travel_type }}</span>
+            </div>
+            <div class="listing-main">
+              <div class="listing-topline">
+                <span>{{ item.provider }}</span>
+                <span class="rating">★ {{ item.rating }}</span>
+              </div>
+              <h2>{{ item.title }}</h2>
+              <p class="listing-route">{{ item.origin }} <span>→</span> {{ item.destination }} · {{ item.departure_date }} · {{ item.duration }}</p>
+              <p>{{ item.summary }}</p>
+              <ul class="amenity-list" aria-label="Amenities">
+                {% for amenity in item.amenities %}<li>{{ amenity }}</li>{% endfor %}
+              </ul>
+            </div>
+            <div class="listing-price">
+              <span class="inventory {% if item.inventory_available <= 10 %}inventory-low{% endif %}">{{ item.inventory_label }}</span>
+              <strong>{{ item.quote.total_amount|currency }}</strong>
+              <span>for 1 traveller</span>
+              <form action="{{ url_for('main.create_booking', listing_id=item.id) }}" method="post">
+                <input type="hidden" name="travellers" value="{{ request.args.get('travellers', 1) }}">
+                <button class="button button-primary" type="submit">Review booking {{ icon("arrow-right", 17) }}</button>
+              </form>
+            </div>
+          </article>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          {{ icon("search", 42) }}
+          <h2>No matching inventory</h2>
+          <p>Try another route, date, price limit, or travel type.</p>
+          <a class="button button-primary" href="{{ url_for('main.index') }}">Start a new search</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

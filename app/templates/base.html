@@ -1,0 +1,51 @@
+{% from "icons.html" import icon %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="TravelEase academic travel booking platform simulation">
+  <title>{% block title %}TravelEase{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="{{ url_for('main.index') }}" aria-label="TravelEase home">
+      <span class="brand-mark">{{ icon("pin", 24) }}</span>
+      <span>TravelEase</span>
+    </a>
+    <nav class="primary-nav" aria-label="Primary navigation">
+      <a href="{{ url_for('main.index') }}">{{ icon("home", 17) }} Explore</a>
+      <a href="{{ url_for('main.system_overview') }}">{{ icon("server", 17) }} System View</a>
+    </nav>
+    <div class="header-status">
+      <span class="status-dot"></span>
+      Provider network online
+    </div>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-stack">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <footer class="site-footer">
+    <div>
+      <strong>TravelEase</strong>
+      <span>Academic distributed systems demonstration</span>
+    </div>
+    <div class="footer-trust">
+      {{ icon("shield", 18) }}
+      Secure simulation. No real payments are collected.
+    </div>
+  </footer>
+</body>
+</html>

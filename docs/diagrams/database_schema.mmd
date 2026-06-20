@@ -1,0 +1,55 @@
+erDiagram
+    USERS ||--o{ BOOKINGS : creates
+    LISTINGS ||--o{ BOOKINGS : selected_for
+    BOOKINGS ||--o{ PAYMENTS : has
+    BOOKINGS ||--o{ PROVIDER_CONFIRMATIONS : receives
+    BOOKINGS ||--o{ TRANSACTION_HISTORY : emits
+
+    USERS {
+        int id PK
+        string full_name
+        string email UK
+        string phone
+    }
+    LISTINGS {
+        string id PK
+        string travel_type
+        string origin
+        string destination
+        date departure_date
+        decimal base_price
+        int inventory_available
+        decimal demand_multiplier
+    }
+    BOOKINGS {
+        string id PK
+        int user_id FK
+        string listing_id FK
+        int travellers
+        string status
+        decimal total_amount
+        datetime hold_expires_at
+        string idempotency_key UK
+    }
+    PAYMENTS {
+        string id PK
+        string booking_id FK
+        decimal amount
+        string status
+        string gateway
+        string idempotency_key UK
+    }
+    PROVIDER_CONFIRMATIONS {
+        int id PK
+        string booking_id FK
+        string provider_reference
+        string status
+        string message
+    }
+    TRANSACTION_HISTORY {
+        int id PK
+        string booking_id FK
+        string event_type
+        string details
+        datetime created_at
+    }

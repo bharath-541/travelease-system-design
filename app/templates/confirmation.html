@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "icons.html" import icon %}
+{% block title %}Booking confirmed | TravelEase{% endblock %}
+{% block content %}
+<section class="status-page status-success">
+  <div class="status-symbol">{{ icon("check", 44) }}</div>
+  <p class="status-label">Booking confirmed</p>
+  <h1>Your journey is locked in.</h1>
+  <p>The payment and provider reservation completed successfully. The confirmation is stored as an auditable transaction.</p>
+
+  <div class="ticket">
+    <div class="ticket-head">
+      <div><span>{{ booking.provider }}</span><h2>{{ booking.origin }} <i>→</i> {{ booking.destination }}</h2></div>
+      <strong>{{ booking.id }}</strong>
+    </div>
+    <div class="ticket-grid">
+      <div><span>Trip</span><strong>{{ booking.title }}</strong></div>
+      <div><span>Departure</span><strong>{{ booking.departure_date }}</strong></div>
+      <div><span>Travellers</span><strong>{{ booking.travellers }}</strong></div>
+      <div><span>Paid</span><strong>{{ booking.total_amount|currency }}</strong></div>
+      <div><span>Provider reference</span><strong>{{ provider.provider_reference if provider else "Pending" }}</strong></div>
+      <div><span>Status</span><strong class="confirmed-text">{{ booking.status }}</strong></div>
+    </div>
+  </div>
+
+  <div class="status-actions">
+    <a class="button button-secondary" href="{{ url_for('main.system_overview') }}">{{ icon("activity", 18) }} View system events</a>
+    <form action="{{ url_for('main.cancel_booking', booking_id=booking.id) }}" method="post">
+      <button class="button button-danger" type="submit">{{ icon("x", 18) }} Cancel booking</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

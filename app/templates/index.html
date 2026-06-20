@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% from "icons.html" import icon %}
+{% block title %}TravelEase | Search and book{% endblock %}
+{% block content %}
+<section class="hero">
+  <img class="hero-image" src="{{ url_for('static', filename='img/travel-hero.png') }}" alt="Indian air, rail, road, and coastal travel landscape">
+  <div class="hero-content">
+    <h1>Search smarter.<br>Book with confidence.</h1>
+    <p>Compare live-style fares across flights, stays, buses, trains, and curated holidays in one resilient booking flow.</p>
+  </div>
+
+  <form class="search-console" action="{{ url_for('main.search') }}" method="get">
+    <div class="travel-tabs" role="tablist" aria-label="Travel type">
+      {% for value, label, icon_name in [
+        ("flight", "Flights", "plane"),
+        ("hotel", "Hotels", "hotel"),
+        ("bus", "Buses", "bus"),
+        ("train", "Trains", "train"),
+        ("package", "Packages", "package")
+      ] %}
+        <button class="travel-tab {% if loop.first %}is-active{% endif %}" type="button" data-travel-type="{{ value }}" role="tab" aria-selected="{{ 'true' if loop.first else 'false' }}">
+          {{ icon(icon_name, 19) }}
+          {{ label }}
+        </button>
+      {% endfor %}
+      <input id="travel-type" type="hidden" name="travel_type" value="flight">
+    </div>
+    <div class="search-fields">
+      <label class="field">
+        <span>From</span>
+        <span class="field-control">{{ icon("pin", 18) }}<input name="origin" value="Mumbai" required aria-label="Origin"></span>
+      </label>
+      <label class="field">
+        <span>To</span>
+        <span class="field-control">{{ icon("arrow-right", 18) }}<input name="destination" value="Delhi" required aria-label="Destination"></span>
+      </label>
+      <label class="field">
+        <span>Departure</span>
+        <span class="field-control">{{ icon("calendar", 18) }}<input type="date" name="departure_date" value="{{ default_date }}" required></span>
+      </label>
+      <label class="field field-small">
+        <span>Travellers</span>
+        <span class="field-control">{{ icon("user", 18) }}<select name="travellers" aria-label="Travellers">
+          <option value="1">1 traveller</option>
+          <option value="2">2 travellers</option>
+          <option value="3">3 travellers</option>
+          <option value="4">4 travellers</option>
+        </select></span>
+      </label>
+      <button class="button button-primary search-button" type="submit">
+        {{ icon("search", 19) }} Search trips
+      </button>
+    </div>
+  </form>
+</section>
+
+<section class="route-section">
+  <div class="section-heading">
+    <div>
+      <h2>Routes worth taking</h2>
+      <p>Recommended from seeded provider inventory and demand signals.</p>
+    </div>
+    <a class="text-link" href="{{ url_for('main.search', travel_type='flight') }}">View all {{ icon("arrow-right", 17) }}</a>
+  </div>
+
+  <div class="route-grid">
+    {% for item in recommendations %}
+      <article class="route-card">
+        <div class="route-visual tone-{{ item.image_tone }}">
+          {{ icon({"flight": "plane", "hotel": "hotel", "bus": "bus", "train": "train", "package": "package"}[item.travel_type], 31) }}
+          <span>{{ item.travel_type }}</span>
+        </div>
+        <div class="route-copy">
+          <span class="route-line">{{ item.origin }} to {{ item.destination }}</span>
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.provider }} · {{ item.duration }}</p>
+          <div class="route-price">
+            <strong>{{ item.quote.total_amount|currency }}</strong>
+            <span>dynamic total</span>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="confidence-band">
+  <div>{{ icon("search", 25) }}<strong>Fast search</strong><span>Indexed results with short-lived query caching.</span></div>
+  <div>{{ icon("shield", 25) }}<strong>Safe inventory</strong><span>Transactional holds prevent concurrent overbooking.</span></div>
+  <div>{{ icon("refresh", 25) }}<strong>Reliable recovery</strong><span>Refund and inventory compensation on failure.</span></div>
+</section>
+{% endblock %}

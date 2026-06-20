@@ -1,0 +1,41 @@
+sequenceDiagram
+    actor User
+    participant Web as Web / Mobile App
+    participant Search as Search Service
+    participant Cache as Redis / OpenSearch
+    participant Booking as Booking Manager
+    participant DB as Transactional Database
+    participant Pay as Payment Service
+    participant Provider as External Provider
+    participant Events as Event Bus
+
+    User->>Web: Search route and date
+    Web->>Search: Search request
+    Search->>Cache: Read indexed listings and cached prices
+    Cache-->>Search: Candidate inventory
+    Search-->>Web: Ranked results
+    User->>Web: Select option
+    Web->>Booking: Create idempotent hold
+    Booking->>DB: Atomic inventory check and decrement
+    DB-->>Booking: Hold created with expiry
+    Booking-->>Web: Booking review and quoted price
+    User->>Web: Confirm simulated payment
+    Web->>Pay: Authorize using idempotency key
+    Pay-->>Booking: Approved or declined
+    alt Payment approved
+        Booking->>Provider: Revalidate and reserve
+        alt Provider confirms
+            Provider-->>Booking: Confirmation reference
+            Booking->>DB: Mark CONFIRMED
+            Booking->>Events: Publish BookingConfirmed
+            Booking-->>Web: Confirmation
+        else Provider timeout or rejection
+            Booking->>DB: Release inventory
+            Booking->>Pay: Compensating refund
+            Booking->>Events: Publish BookingFailed
+            Booking-->>Web: Safe failure state
+        end
+    else Payment declined
+        Booking->>DB: Release inventory
+        Booking-->>Web: Payment failure state
+    end

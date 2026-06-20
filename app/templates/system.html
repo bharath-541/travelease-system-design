@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "icons.html" import icon %}
+{% block title %}System view | TravelEase{% endblock %}
+{% block content %}
+<section class="system-shell">
+  <header class="system-header">
+    <div><h1>TravelEase system view</h1><p>Operational evidence from the local simulation, paired with the proposed distributed architecture.</p></div>
+    <a class="button button-secondary" href="{{ url_for('main.index') }}">{{ icon("search", 17) }} Run another workflow</a>
+  </header>
+
+  <div class="metric-row">
+    <div><span>Seeded inventory</span><strong>{{ stats.listings }}</strong><small>provider listings</small></div>
+    <div><span>Booking attempts</span><strong>{{ stats.bookings }}</strong><small>persisted records</small></div>
+    <div><span>Confirmed</span><strong>{{ stats.confirmed }}</strong><small>provider accepted</small></div>
+    <div><span>Search events</span><strong>{{ stats.searches }}</strong><small>auditable queries</small></div>
+  </div>
+
+  <div class="system-grid">
+    <section class="architecture-panel">
+      <div class="panel-heading">{{ icon("server", 22) }}<div><h2>Distributed architecture</h2><p>Detailed source: <code>docs/diagrams/architecture.mmd</code></p></div></div>
+      <img src="{{ url_for('static', filename='img/architecture.png') }}" alt="TravelEase distributed system architecture diagram">
+    </section>
+    <section class="event-panel">
+      <div class="panel-heading">{{ icon("activity", 22) }}<div><h2>Recent workflow events</h2><p>Compensation and confirmation history.</p></div></div>
+      {% if events %}
+        <ol class="event-list">
+          {% for event in events %}
+            <li><span></span><div><strong>{{ event.event_type.replace("_", " ").title() }}</strong><small>{{ event.booking_id or "Search service" }} · {{ event.created_at }}</small></div></li>
+          {% endfor %}
+        </ol>
+      {% else %}
+        <div class="event-empty">Complete a booking workflow to populate the event stream.</div>
+      {% endif %}
+    </section>
+  </div>
+</section>
+{% endblock %}

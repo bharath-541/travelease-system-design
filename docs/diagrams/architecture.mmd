@@ -1,0 +1,71 @@
+flowchart LR
+    subgraph Clients["Client and Edge Layer"]
+        WEB["Web Application"]
+        MOB["Mobile Applications"]
+        CDN["CDN + WAF"]
+        API["API Gateway"]
+        WEB --> CDN
+        MOB --> CDN
+        CDN --> API
+    end
+
+    subgraph Core["Domain Microservices"]
+        AUTH["Identity Service"]
+        SEARCH["Search Aggregator"]
+        PRICE["Pricing Service"]
+        BOOK["Booking Manager / Saga"]
+        PAY["Payment Service"]
+        PROVIDER["Provider Integration"]
+        REC["Recommendation Service"]
+        NOTIFY["Notification Service"]
+    end
+
+    subgraph Data["Data and Messaging Layer"]
+        REDIS[("Redis Cache")]
+        OPENSEARCH[("OpenSearch Index")]
+        POSTGRES[("PostgreSQL Primary + Replicas")]
+        NOSQL[("NoSQL User / Session Store")]
+        KAFKA[["Kafka / Event Bus"]]
+        OBJECT[("Object Storage + Data Lake")]
+    end
+
+    subgraph External["External Systems"]
+        AIR["Airline APIs"]
+        HOTEL["Hotel APIs"]
+        RAIL["Rail and Bus APIs"]
+        GATEWAY["Payment Gateways"]
+        CHANNEL["Email / SMS / Push"]
+    end
+
+    subgraph Reliability["Platform Reliability"]
+        OBS["Metrics, Logs, Traces"]
+        CONFIG["Service Discovery + Config"]
+        DLQ["Retry Queues + DLQ"]
+    end
+
+    API --> AUTH
+    API --> SEARCH
+    API --> BOOK
+    SEARCH --> REDIS
+    SEARCH --> OPENSEARCH
+    SEARCH --> PRICE
+    SEARCH --> REC
+    PRICE --> POSTGRES
+    BOOK --> POSTGRES
+    BOOK --> PAY
+    BOOK --> PROVIDER
+    BOOK --> KAFKA
+    PAY --> GATEWAY
+    PROVIDER --> AIR
+    PROVIDER --> HOTEL
+    PROVIDER --> RAIL
+    REC --> NOSQL
+    REC --> OBJECT
+    KAFKA --> NOTIFY
+    NOTIFY --> CHANNEL
+    KAFKA --> OPENSEARCH
+    KAFKA --> OBJECT
+    PROVIDER --> DLQ
+    PAY --> DLQ
+    Core --> OBS
+    Core --> CONFIG

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% from "icons.html" import icon %}
+{% block title %}Review {{ booking.id }} | TravelEase{% endblock %}
+{% block content %}
+<section class="transaction-shell">
+  <div class="transaction-heading">
+    <div>
+      <span class="step-line"><b>1</b> Search <i></i><b>2</b> Review <i></i><b class="muted-step">3</b> Confirm</span>
+      <h1>Review booking</h1>
+      <p>Inventory is temporarily reserved while you complete the simulated payment.</p>
+    </div>
+    <div class="hold-timer" data-expiry="{{ booking.hold_expires_at }}">
+      {{ icon("clock", 20) }}
+      <span>Hold expires in</span>
+      <strong data-countdown>10:00</strong>
+    </div>
+  </div>
+
+  <div class="transaction-layout">
+    <div class="review-column">
+      <section class="review-block">
+        <div class="review-route">
+          <span>{{ booking.travel_type }}</span>
+          <h2>{{ booking.origin }} <i>→</i> {{ booking.destination }}</h2>
+          <p>{{ booking.title }} · {{ booking.provider }}</p>
+        </div>
+        <dl class="detail-grid">
+          <div><dt>Departure</dt><dd>{{ booking.departure_date }}</dd></div>
+          <div><dt>Duration</dt><dd>{{ booking.duration }}</dd></div>
+          <div><dt>Travellers</dt><dd>{{ booking.travellers }}</dd></div>
+          <div><dt>Booking ID</dt><dd>{{ booking.id }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="review-block">
+        <h2>Traveller contact</h2>
+        <div class="contact-row">{{ icon("user", 21) }}<div><strong>{{ booking.full_name }}</strong><span>{{ booking.email }} · {{ booking.phone }}</span></div></div>
+      </section>
+
+      <section class="review-block">
+        <h2>What happens next</h2>
+        <ol class="workflow-list">
+          <li><span>1</span><div><strong>Payment authorization</strong><p>An idempotency key prevents duplicate charges.</p></div></li>
+          <li><span>2</span><div><strong>Provider confirmation</strong><p>The external provider revalidates inventory and returns a reference.</p></div></li>
+          <li><span>3</span><div><strong>Confirmation event</strong><p>The booking state is persisted and a confirmation workflow is triggered.</p></div></li>
+        </ol>
+      </section>
+    </div>
+
+    <aside class="payment-panel">
+      <div class="payment-title">{{ icon("card", 23) }}<div><h2>Payment simulation</h2><p>Choose a scenario to demonstrate reliability behavior.</p></div></div>
+      <form action="{{ url_for('main.process_payment', booking_id=booking.id) }}" method="post">
+        <fieldset class="scenario-list">
+          <legend>Gateway outcome</legend>
+          <label><input type="radio" name="scenario" value="success" checked><span><b>Successful booking</b><small>Payment and provider confirmation succeed.</small></span></label>
+          <label><input type="radio" name="scenario" value="payment_failure"><span><b>Payment decline</b><small>Inventory is released immediately.</small></span></label>
+          <label><input type="radio" name="scenario" value="provider_timeout"><span><b>Provider timeout</b><small>Payment is compensated with a refund.</small></span></label>
+          <label><input type="radio" name="scenario" value="provider_reject"><span><b>Provider rejection</b><small>Booking fails after revalidation.</small></span></label>
+        </fieldset>
+
+        <div class="price-breakdown">
+          <div><span>Fare subtotal</span><strong>{{ booking.subtotal|currency }}</strong></div>
+          <div><span>Taxes</span><strong>{{ booking.taxes|currency }}</strong></div>
+          <div><span>Service fee</span><strong>{{ booking.service_fee|currency }}</strong></div>
+          <div class="price-total"><span>Total</span><strong>{{ booking.total_amount|currency }}</strong></div>
+        </div>
+
+        <button class="button button-primary button-full" type="submit" {% if booking.status != "HELD" %}disabled{% endif %}>
+          {{ icon("shield", 19) }} Confirm payment
+        </button>
+        <p class="security-copy">TLS, tokenized payment references, and signed provider callbacks are represented in this simulation.</p>
+      </form>
+    </aside>
+  </div>
+</section>
+{% endblock %}

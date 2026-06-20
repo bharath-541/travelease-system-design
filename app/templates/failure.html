@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "icons.html" import icon %}
+{% block title %}{{ title }} | TravelEase{% endblock %}
+{% block content %}
+<section class="status-page status-failure">
+  <div class="status-symbol">{{ icon("x", 42) }}</div>
+  <p class="status-label">Transaction protected</p>
+  <h1>{{ title }}</h1>
+  <p>{{ message }}</p>
+  {% if booking %}
+    <div class="failure-detail">
+      <div><span>Booking ID</span><strong>{{ booking.id }}</strong></div>
+      <div><span>Current state</span><strong>{{ booking.status }}</strong></div>
+      <div><span>Inventory</span><strong>Released safely</strong></div>
+      <div><span>Payment</span><strong>{% if booking.status == "PROVIDER_FAILED" %}Refunded{% else %}Not captured{% endif %}</strong></div>
+    </div>
+  {% endif %}
+  <div class="status-actions">
+    <a class="button button-primary" href="{{ url_for('main.index') }}">{{ icon("refresh", 18) }} Search again</a>
+    <a class="button button-secondary" href="{{ url_for('main.system_overview') }}">Inspect event log</a>
+  </div>
+</section>
+{% endblock %}
