@@ -94,6 +94,17 @@ http://127.0.0.1:5000
 
 The SQLite database is created automatically at `instance/travelease.sqlite3`.
 
+## Deployment on Render
+
+TravelEase includes a Render Blueprint for a free Python web service in the Singapore region.
+
+1. Open the [TravelEase Render Blueprint](https://dashboard.render.com/blueprint/new?repo=https://github.com/bharath-541/travelease-system-design).
+2. Sign in to Render and connect the `bharath-541/travelease-system-design` GitHub repository when prompted.
+3. Keep the Blueprint defaults and click **Apply**.
+4. Wait for the build and health check to complete, then open the generated `onrender.com` URL.
+
+Render automatically deploys future pushes to `main`. Free services can take about a minute to wake after being idle. This academic demo uses SQLite, so booking and search-history changes can reset after a restart or redeploy; provider inventory is seeded automatically when the app starts.
+
 ## Demonstration Workflow
 
 1. Search the default Mumbai-to-Delhi flight route.
